@@ -4,3 +4,4 @@ anthropic
 streamlit
 python-dotenv
 azure-data-tables
+streamlit-cookies-controller
