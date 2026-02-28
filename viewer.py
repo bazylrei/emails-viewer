@@ -1,8 +1,7 @@
 import hashlib
 import os
-from datetime import datetime
 
-import extra_streamlit_components as stx
+from streamlit_cookies_controller import CookieController
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -13,7 +12,7 @@ import storage  # noqa: E402 — needs env vars loaded first
 st.set_page_config(page_title="Email Intent Viewer", layout="wide")
 
 # --- Password gate ---
-cookie_manager = stx.CookieManager()
+cookie_manager = CookieController()
 _token = hashlib.sha256(os.environ.get("APP_PASSWORD", "").encode()).hexdigest()[:16]
 
 def check_password():
@@ -31,7 +30,7 @@ def check_password():
     if st.button("Login"):
         if password == os.environ.get("APP_PASSWORD", ""):
             st.session_state.authenticated = True
-            cookie_manager.set("auth", token, expires_at=datetime(2077, 1, 1))
+            cookie_manager.set("auth", token, max_age=60 * 60 * 24 * 365 * 50)
             st.rerun()
         else:
             st.error("Incorrect password")
