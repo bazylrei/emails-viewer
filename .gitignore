@@ -1,0 +1,10 @@
+venv/
+.env
+settings.local.json
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+emails/
+__azurite*
