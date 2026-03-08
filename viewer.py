@@ -60,19 +60,18 @@ selected_intent = selected_label.rsplit("  (", 1)[0]
 bucket = intents[selected_intent]
 st.subheader(selected_intent)
 
-# --- Question filter (horizontal tabs) ---
-questions_in_intent = sorted(
-    set(e["question"] for e in bucket["emails"] if e.get("question"))
-)
+# --- Question filter (dropdown, sorted by count) ---
+question_counts = {}
+for e in bucket["emails"]:
+    q = e.get("question", "")
+    if q:
+        question_counts[q] = question_counts.get(q, 0) + 1
 
 selected_question = None
-if questions_in_intent:
-    q_options = ["All"] + questions_in_intent
-    q_labels = ["All"] + [
-        f"{q}  ({sum(1 for e in bucket['emails'] if e.get('question') == q)})"
-        for q in questions_in_intent
-    ]
-    selected_q_label = st.radio("Question", q_labels, horizontal=True, label_visibility="collapsed")
+if question_counts:
+    sorted_questions = sorted(question_counts.items(), key=lambda x: -x[1])
+    q_labels = ["All"] + [f"{q}  ({n})" for q, n in sorted_questions]
+    selected_q_label = st.selectbox("Question", q_labels, label_visibility="collapsed")
     if selected_q_label != "All":
         selected_question = selected_q_label.rsplit("  (", 1)[0]
 
