@@ -5,3 +5,6 @@ streamlit
 python-dotenv
 azure-data-tables
 streamlit-cookies-controller
+openpyxl
+pdfminer.six
+python-docx
