@@ -1,3 +1,4 @@
+import argparse
 import base64
 import json
 import os
@@ -5,6 +6,9 @@ from collections import defaultdict
 
 import msal
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- CONFIG ---
 TENANT_ID = os.environ["TENANT_ID"]
@@ -94,9 +98,18 @@ def flush_month(month_key, emails):
     # \r moves to start of line, \033[K clears it, then print the summary
     print(f"\r\033[K  {month_key}: {len(emails)} originals saved → {path}", flush=True)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--from", dest="date_from", help="Start date (e.g. 2026-03-01)")
+parser.add_argument("--to", dest="date_to", help="End date exclusive (e.g. 2026-04-01)")
+args = parser.parse_args()
+
+date_filter = ""
+if args.date_from and args.date_to:
+    date_filter = f"&$filter=receivedDateTime ge {args.date_from}T00:00:00Z and receivedDateTime lt {args.date_to}T00:00:00Z"
+
 url = (
     f"https://graph.microsoft.com/v1.0/users/{SHARED_MAILBOX}/mailFolders/{folder_id}/messages"
-    f"?$top=999&$select={SELECT}&$orderby=receivedDateTime desc"
+    f"?$top=999&$select={SELECT}&$orderby=receivedDateTime desc{date_filter}"
 )
 
 by_month = defaultdict(list)
